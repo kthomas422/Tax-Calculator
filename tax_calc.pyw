@@ -16,28 +16,22 @@ flat_tax = 2          # $2 per night city/county tax
 
 
 # Purpose: To calculate the total charges after tax
-#   Input: The number of nights to stay and the rate
-#  Output: The total charges after tax
-def calcTax(nights, rate):
-    return round(nights * (tax_rate * rate + flat_tax), 2)
+#   Input: The room rate (float)
+#  Output: The total after tax (float)
+def calcTax(rate):
+    return rate * tax_rate + flat_tax
 
 # Purpose: To calculate just the room charges without tax
-#   Input: The number of nights and the total charges
-#  Output: The total room charges (minus tax) and the rate per night
+#   Input: The number of nights (int) and the total charges (float)
+#  Output: The total room charges (minus tax) (float)
 def calcRate(nights, total):
-    return round((((total / nights) - flat_tax) / tax_rate), 2)
+    return ((total / nights) - flat_tax) / tax_rate
 
 # Purpose: To calculate the total tax paid
-#   Input: The rate, the total and the number of nights
-#  Output: The tax paid
+#   Input: The rate (float), the total and the number of nights (int)
+#  Output: The tax paid (float)
 def calcDiff(rate, total, nights):
-    return round(total - (rate * nights), 2)
-
-# Purpose: To calculate the nightly tax paid
-#   Input: The rate, the total and the number of nights
-#  Output: The nightly tax paid
-def calcNightlyTax(rate):
-    return round(calcTax(1,rate) - rate, 2)
+    return total - (rate * nights)
 
 # Purpose: To determine whether a point is in a rectangle or not
 #   Input: A rectangle and a point
@@ -122,7 +116,7 @@ def main():
             window.close()
             break
 
-        if(isPtInRect(calcButton, click)):
+        if (isPtInRect(calcButton, click)):
             try:
                 rate = float(rateBox.getText())
                 nights = int(nightBox.getText())
@@ -138,7 +132,7 @@ def main():
                 errorFlag = True
 
             # Make sure values are "sane"
-            if ((not errorFlag) and (rate < 0 or nights < 0 or total < 0)):
+            if ((not errorFlag) and (rate < 0 or nights < 1 or total < 0)):
                 totalBox.setText("0")
                 nightBox.setText("1")
                 rateBox.setText("0")
@@ -148,21 +142,21 @@ def main():
                 errorFlag = True
 
             if (not errorFlag):
-                if(rate > 0):
-                    total = calcTax(nights, rate)
+                if (rate > 0):
+                    total = round(calcTax(rate) * nights, 2)
                     totalBox.setText(str(total))
                     if calcFlag:
                         diff0.undraw()
                         diff1.undraw()
                     diff0 = Text(Point(150, 270),
-                                 "Total Tax: " + str(calcDiff(rate, total, nights)))
+                                 "Total Tax: " + str(round(calcDiff(rate, total, nights), 2)))
 
                     diff0.setFill("red")
                     diff0.setFace("courier")
                     diff0.draw(window)
 
                     diff1 = Text(Point(150, 245),
-                                 "Nightly Tax: " + str(calcNightlyTax(rate)))
+                                 "Nightly Tax: " + str(round(calcTax(rate) - rate, 2)))
                     
                     diff1.setFill("red")
                     diff1.setFace("courier")
@@ -170,22 +164,22 @@ def main():
                     
                     calcFlag = True
 
-                elif(total > 0):
-                    rate = calcRate(nights, total)
+                elif (total > 0):
+                    rate = round(calcRate(nights, total), 2)
                     rateBox.setText(str(rate))
                     if calcFlag:
                         diff0.undraw()
                         diff1.undraw()
 
                     diff0 = Text(Point(150, 270),
-                                 "Total Tax: " + str(calcDiff(rate, total, nights)))
+                                 "Total Tax: " + str(round(calcDiff(rate, total, nights), 2)))
                     
                     diff0.setFill("red")
                     diff0.setFace("courier")
                     diff0.draw(window)
 
                     diff1 = Text(Point(150, 245),
-                                 "Nightly Tax: " + str(calcNightlyTax(rate)))
+                                 "Nightly Tax: " + str(round(calcTax(rate) - rate, 2)))
                     
                     diff1.setFill("red")
                     diff1.setFace("courier")
